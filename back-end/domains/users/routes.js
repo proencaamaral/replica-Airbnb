@@ -29,7 +29,7 @@ router.get('/profile', async (req, res) => {
     if (token) {
         
         try {
-            const userInfo = jwt.verify(token, JWT_SECRET_KEY,);
+            const userInfo = jwt.verify(token, JWT_SECRET_KEY)
     
             res.json(userInfo)
         } catch (error) {
@@ -37,7 +37,7 @@ router.get('/profile', async (req, res) => {
         }
     } else {
         res.json(null);
-    }
+    }  
 
 });
 
@@ -54,7 +54,11 @@ router.post("/", async (req, res) => {
             password: encryptedPassword,
         });
 
-        res.json(newUserDoc);
+        const { _id } = newUserDoc;
+        const newUserObj = { name, email, _id };
+
+         const token = jwt.sign(newUserObj, JWT_SECRET_KEY);
+         res.cookie("token", token).json(newUserObj);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -74,9 +78,9 @@ router.post("/login", async (req, res) => {
 
             if (passwordCorrect) {
                 const newUserObj = { name, email, _id };
-                const token = jwt.sign(newUserObj, JWT_SECRET_KEY);
+                    const token = jwt.sign(newUserObj, JWT_SECRET_KEY);
 
-                res.cookie("token", token).json(newUserObj);
+                    res.cookie("token", token).json(newUserObj);
             } else {
                 res.status(400).json("Senha invalida !");
             }
